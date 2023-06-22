@@ -36,6 +36,7 @@
             $this->nombre= "";
             $this->direccion= "";
         }
+        //funcion para guardar los valores de un objeto
         public function cargar($id,$nom,$dir){		
             $this->setIdEmpresa($id);
             $this->setNombre($nom);
@@ -91,16 +92,14 @@
                     $resp=  true;
                 }else{
                     $this->setmensajeoperacion($base->getError());
-                    
                 }
             }else{
-                    $this->setmensajeoperacion($base->getError());
-                
+                $this->setmensajeoperacion($base->getError());                
             }
             return $resp;
         }
         //funcion para listar todos los elementos de la tabla empresa
-        public static function listar($condicion=""){
+        public /*static*/ function listar($condicion=""){
             $arregloEmpresa = null;
             $base=new BaseDatos();
             $consultaEmpresa="Select * from empresa ";
@@ -113,27 +112,21 @@
                 if($base->Ejecutar($consultaEmpresa)){				
                     $arregloEmpresa= array();
                     while($row2=$base->Registro()){
-                        
                         $IdEmp=$row2['idempresa'];
                         $NomEmp=$row2['enombre'];
                         $DirEmp=$row2['edireccion'];
-                    
                         $empre=new Empresa();
                         $empre->cargar($IdEmp,$NomEmp,$DirEmp);
-                        array_push($arregloPersona,$empre);
-        
+                        array_push($arregloEmpresa,$empre);
                     }
-                    
-                
-                 }	else {
-                         $this->setmensajeoperacion($base->getError());
-                     
+                }else{
+                    $this->setmensajeoperacion($base->getError());
                 }
              }	else {
                      $this->setmensajeoperacion($base->getError());
                  
              }	
-             return $arregloPersona;
+             return $arregloEmpresa;
         }
     
 

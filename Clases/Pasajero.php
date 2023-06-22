@@ -5,6 +5,7 @@
         private $apellido;
         private $numeroTel;
         private $objetoViaje; //objeto
+        private $mensajeoperacion;
        
         public function setNombre($valor){
             $this->nombre=$valor;
@@ -36,20 +37,120 @@
         public function getObjetoViaje(){
             return $this->objetoViaje;
         }
-        
-        public function __construct($name,$apell,$doc,$tel,$viaje){
-            $this->nombre=$name;
-            $this->apellido=$apell;
-            $this->dni=$doc;
-            $this->numeroTel=$tel;
-            $this->objetoViaje=$viaje;
+        //mensaje de operacion para guardar los mensajes de error
+        public function getmensajeoperacion(){
+            return $this->mensajeoperacion ;
         }
+        public function setmensajeoperacion($mensajeoperacion){
+            $this->mensajeoperacion=$mensajeoperacion;
+        }
+        
+        public function __construct(){
+            $this->nombre= "";
+            $this->apellido="";
+            $this->dni= "";
+            $this->numeroTel= "";
+            $this->objetoViaje = new Viaje();
+        }
+        //funcion para guardar los valores de un objeto
+        public function Cargar($nom,$ape,$dni,$tel,$objV){
+            $this->setNombre($nom);
+            $this->setApellido($ape);
+            $this->setDni($dni);
+            $this->setNumeroTel($tel);
+            $this->setObjetoViaje($objV);
+        } 
         public function __toString(){
             return "     Nombre: ".$this->getNombre().
             "\n     Apellido: ".$this->getApellido().
             "\n     Dni: ".$this->getDni().
             "\n     Numero Telefono: ".$this->getNumeroTel().
-            "\n     ID Viaje: ".$this->getObjetoViaje();
+            "\n     ID Viaje: ".$this->getObjetoViaje()->getIdViaje();//ver si escribo el viaje o solo el id!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         }
+        //funcion para insertar una pasajero a la base
+        public function insertar(){
+            $base=new BaseDatos();
+            $resp= false;
+            $consultaInsertar="INSERT INTO pasajero(pdocumento, pnombre, papellido,idviaje) 
+                    VALUES (".$this->getDni().",'".$this->getNombre()."','".$this->getApellido()."','".$this->getObjetoViaje()->getIdViaje()."')";
+            
+            if($base->Iniciar()){
+                if($base->Ejecutar($consultaInsertar)){
+                    $resp=  true;
+                }else{
+                    $this->setmensajeoperacion($base->getError());
+                }
+            }else{
+                $this->setmensajeoperacion($base->getError());  
+            }
+            return $resp;
+        }
+        //funcion para eliminar una empresa de la base de datos
+        public function eliminar(){
+            $base=new BaseDatos();
+            $resp=false;
+            if($base->Iniciar()){
+                $consultaBorra="DELETE FROM pasajero WHERE pdocumento=".$this->getDni();
+                if($base->Ejecutar($consultaBorra)){
+                    $resp=  true;
+                }else{
+                    $this->setmensajeoperacion($base->getError());
+                }
+            }else{
+                $this->setmensajeoperacion($base->getError());
+            }
+            return $resp; 
+        }
+         //funcion para modificar las pasajero
+         public function modificar(){
+            $resp =false; 
+            $base=new BaseDatos();
+            $consultaModifica="UPDATE pasajero SET pdocumento='".$this->getDni()."',pnombre='".$this->getNombre().
+            "',papellido='".$this->getApellido()."',ptelefono='".$this->getNumeroTel()."',idviaje='".$this->getObjetoViaje()->getIdViaje().
+            "' WHERE pdocumento=". $this->getDni();
+            if($base->Iniciar()){
+                if($base->Ejecutar($consultaModifica)){
+                    $resp=  true;
+                }else{
+                    $this->setmensajeoperacion($base->getError());
+                }
+            }else{
+                $this->setmensajeoperacion($base->getError());
+            }
+            return $resp;
+        }
+        //funcion para listar todos los elementos de la tabla pasajero
+        public /*static*/ function listar($condicion=""){
+            $arregloPasajero = null;
+            $base=new BaseDatos();
+            $consultaPasajero="Select * from pasajero ";
+            if ($condicion!=""){
+                $consultaPasajero=$consultaPasajero.' where '.$condicion;
+            }
+            $consultaPasajero.=" order by enombre ";
+            //echo $consultaPersonas;
+            if($base->Iniciar()){
+                if($base->Ejecutar($consultaPasajero)){				
+                    $arregloPasajero= array();
+                    while($row2=$base->Registro()){
+                        $DocPa=$row2['pdocumento'];
+                        $NomPa=$row2['pnombre'];
+                        $ApePa=$row2['papellido'];
+                        $TelPa=$row2['ptelefono'];
+                        $IdVia=$row2['idviaje'];
+                        
+                        $pasa=new Pasajero();
+                        $pasa->cargar($DocPa,$NomPa,$ApePa,$TelPa,$IdVia);
+                        array_push($arregloPasajero,$pasa);
+                    }
+                }else{
+                    $this->setmensajeoperacion($base->getError());
+                }
+            }else {
+                $this->setmensajeoperacion($base->getError());
+            }	
+            return $arregloPasajero;
+        }
+    
     }
 ?>
