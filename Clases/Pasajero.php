@@ -1,4 +1,5 @@
 <?php
+    include './Clases/BaseDatos.php';
     class Pasajero{
         private $dni;
         private $nombre;

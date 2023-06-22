@@ -1,4 +1,5 @@
 <?php 
+    include './Clases/BaseDatos.php';
     class Empresa{
         private $idEmpresa;
         private $nombre;

@@ -1,5 +1,4 @@
 <?php
-include 'Viaje.php';
 include './Clases/Pasajero.php';
 include './Clases/Viaje.php';
 include './Clases/Empresa.php';
@@ -15,5 +14,20 @@ include './Clases/Responsable.php';
   solo existiendo viajes para venderles coon su responsable
   ESE ES MI TEST 
 */
+function opcionesEmpresa(){
+  echo"**************************************************\n";
+  echo "Ingrese 1 si quiere INGRESAR una empresa\n";
+  echo "Ingrese 2 si quiere MODIFICAR una empresa\n";
+  echo "Ingrese 3 si quiere ELIMINAR una empresa\n";
+  echo "Ingrese 4 si quiere TRABAJAR SOBRE LOS VIAJES de una empresa\n";
+  echo "Ingrese cualquier numero distinto para salir ";
+  echo"**************************************************\n";
+  $op = trim(fgets(STDIN));
+  return $op;
+}
+
+do{
+  $opcion=opcionesEmpresa();
+}while($opcion!=-1)
 
 ?>
