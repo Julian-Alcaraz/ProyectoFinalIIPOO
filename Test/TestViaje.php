@@ -28,6 +28,32 @@
     echo"**************************************************************\n";
     return $op;
   }
+  function opcionesViaje(){
+    echo"**************************************************************\n";
+    echo "*Ingrese 1 si quiere INGRESAR un viaje\n";
+    echo "*Ingrese 2 si quiere MODIFICAR un viaje\n";
+    echo "*Ingrese 3 si quiere ELIMINAR un viaje\n";
+    echo "*Ingrese 4 si quiere LISTAR viajes\n";
+    echo "*Ingrese 5 si quiere TRABAJAR SOBRE LOS PASAJEROS\n";
+    echo "*Ingrese 6 si quiere TRABAJAR SOBRE LOS RESPONSABLES\n";
+    echo "*Ingrese 7 para volver al menu de empresas\n";
+    echo "*Ingrese cualquier numero distinto para salir de la APP \n";
+    $opV = trim(fgets(STDIN));
+    echo"**************************************************************\n";
+    return $opV;
+  }
+  function existeEmpresa($idE){
+    $emp= new Empresa();
+    $emp->setIdEmpresa($idE);
+    $arregloEmp=$emp->listar();
+    $existencia=false;
+    foreach($arregloEmp as $e){
+      if($e->getIdEmpresa()==$idE){
+        $existencia=true;
+      }
+    }
+    return $existencia;
+  }
   //FUNCIONES EMPRESA
   function ingresarEmpresa(){
     $empresa=new Empresa();
@@ -43,14 +69,8 @@
     $emp=new Empresa();
     echo "Ingrese el ID de la empresa que desea eliminar\n";
     $idEli = trim(fgets(STDIN));
-    $emp->setIdEmpresa($idEli);
-    $arregloEmp=$emp->listar();
-    $existeEmp=false;
-    foreach($arregloEmp as $e){
-      if($e->getIdEmpresa()==$idEli){
-        $existeEmp=true;
-      }
-    }
+    $emp->setIdEmpresa($idEli); 
+    $existeEmp=existeEmpresa($idEli);
     if($existeEmp){
       $emp->eliminar();
       echo "Empresa eliminada correctamente\n";
@@ -63,13 +83,7 @@
     echo "Ingrese el ID de la empresa que desea modificar\n";
     $idMod = trim(fgets(STDIN));
     $emp->setIdEmpresa($idMod);
-    $arregloEmp=$emp->listar();
-    $existeEmp=false;
-    foreach($arregloEmp as $e){
-      if($e->getIdEmpresa()==$idMod){
-        $existeEmp=true;
-      }
-    }
+    $existeEmp=existeEmpresa($idMod);
     if($existeEmp){
       echo "Ingrese el nombre\n";
       $nombreE=trim(fgets(STDIN));
@@ -93,6 +107,10 @@
       $cantEmp++;
     }
   }
+  // FUNCIONES VIAJE
+  function ingresarViaje(){
+
+  }
   do{
     $opcion=opcionesEmpresa();
     switch($opcion){
@@ -109,11 +127,48 @@
         listarEmpresas();
         break;
       case 5:
-
+        $emp= new Empresa();
+        echo "Ingrese el numero de empresa con la cual quiere trabajar\n";
+        $numEmp=trim(fgets(STDIN));
+        $existeEmp=existeEmpresa($numEmp);
+        if($existeEmp){
+          do{
+            $opcionV=opcionesViaje();
+            switch($opcionV){
+              case 1:
+                // ingresarViaje();
+                break;
+              case 2:
+                // modificarViaje();
+                break;
+              case 3:
+                // eliminarViaje();
+                break;
+              case 4:
+                // listarViaje();
+                break;
+              case 5:
+                //PASAJEROS
+                break;
+              case 6:
+                //REPRESENTANTE
+                break;
+              case 7:
+                $opcionV=-2;
+                break;
+              default:
+                $opcion=-1;
+                $opcionV=-2;
+                break;
+              }         
+            }while($opcionV!=-2);
+          }else{
+            echo "ID ingresado no existente\n";
+          }
         break;
       default: $opcion=-1;
         break;
     }
-  }while($opcion!=-1)
+  }while($opcion!=-1);
 
 ?>
