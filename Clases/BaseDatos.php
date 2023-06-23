@@ -1,6 +1,5 @@
 ﻿<?php
 /* IMPORTANTE !!!!  Clase para (PHP 5, PHP 7)*/
-
 class BaseDatos {
     private $HOSTNAME;
     private $BASEDATOS;
@@ -110,7 +109,7 @@ class BaseDatos {
         unset($this->ERROR);
         $this->QUERY = $consulta;
         if ($this->RESULT = mysqli_query($this->CONEXION,$consulta)){
-            $id = mysqli_insert_id();
+            $id = mysqli_insert_id($this->CONEXION);
             $resp =  $id;
         } else {
             $this->ERROR =mysqli_errno( $this->CONEXION) . ": " . mysqli_error( $this->CONEXION);

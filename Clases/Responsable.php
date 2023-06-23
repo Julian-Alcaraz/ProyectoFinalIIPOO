@@ -1,5 +1,4 @@
 <?php 
-    include './Clases/BaseDatos.php';
     class Responsable{
         private $numeroEmpleado;
         private $numeroLicencia;

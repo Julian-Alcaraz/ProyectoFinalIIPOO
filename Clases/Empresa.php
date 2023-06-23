@@ -1,5 +1,4 @@
 <?php 
-    include './Clases/BaseDatos.php';
     class Empresa{
         private $idEmpresa;
         private $nombre;
@@ -33,9 +32,9 @@
         }
         //constructor en vacio
         public function __construct(){
-            $this->idEmpresa= "";
-            $this->nombre= "";
-            $this->direccion= "";
+            $this->idEmpresa= null;
+            $this->nombre= null;
+            $this->direccion= null;
         }
         //funcion para guardar los valores de un objeto
         public function cargar($id,$nom,$dir){		
@@ -45,22 +44,22 @@
         }
 
         public function __toString(){
-            return "Id Empresa: ".$this->getIdEmpresa().
-                   "\nNombre: ".$this->getNombre().
-                   "\nDireccion: ".$this->getDireccion();
+            return "    Id Empresa: ".$this->getIdEmpresa()."\n".
+                   "    Nombre: ".$this->getNombre()."\n".
+                   "    Direccion: ".$this->getDireccion();
         }
         //funcion para insertar una empresa empresa a la base
         public function insertar(){
             $base=new BaseDatos();
             $resp= false;
-            $consultaInsertar="INSERT INTO empresa(idempresa, enombre, edireccion) 
-                    VALUES (".$this->getIdEmpresa().",'".$this->getNombre()."','".$this->getDireccion()."')";
-            
+            $consultaInsertar="INSERT INTO empresa(enombre, edireccion) 
+                    VALUES ('".$this->getNombre()."','".$this->getDireccion()."')";
             if($base->Iniciar()){
-                if($base->Ejecutar($consultaInsertar)){
-                    $resp=  true;
+                if ($id = $base -> devuelveIDInsercion ($consultaInsertar)){
+                $this -> setIdEmpresa($id);
+                $resp = true;
                 }else{
-                    $this->setmensajeoperacion($base->getError());
+                $this -> setmensajeoperacion($base->getError());
                 }
             }else{
                 $this->setmensajeoperacion($base->getError());  

@@ -1,5 +1,4 @@
 <?php
-    include './Clases/BaseDatos.php';
     class Viaje{
         private $idViaje;
         private $destino;
