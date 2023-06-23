@@ -20,7 +20,7 @@
         public function cargar($idV,$dest,$cantPas,$objResp,$objEmp,$imp){
             $this->setIdViaje($idV);
             $this->setDestino($dest);
-            $this->setCantMaxViajes($cantPas);
+            $this->setCantMaxPasajeros($cantPas);
             $this->setObjResponsable($objResp);
             $this->setObjEmpresa($objEmp);
             $this->setImporte($imp);
@@ -45,7 +45,7 @@
         public function getDestino(){
             return $this->destino;    
         }
-        public function getCantMaxViajes(){
+        public function getCantMaxPasajeros(){
             return $this->cantMaxViajes;    
         }
         public function setIdViaje($codVia){
@@ -54,7 +54,7 @@
         public function setDestino($dest){
             $this->destino = $dest;
         }
-        public function setCantMaxViajes($cantM){
+        public function setCantMaxPasajeros($cantM){
             $this->cantMaxViajes = $cantM;
         }
         public function setObjResponsable($valor){
@@ -72,7 +72,7 @@
         public function __toString(){
             $mensaje="  Codigo Viaje: ".$this->getIdViaje()."\n".
             "  Destino Viaje: ".$this->getDestino()."\n".
-            "  Cantidad de Viajes: ".$this->getCantMaxViajes()."\n".
+            "  Cantidad de Viajes: ".$this->getCantMaxPasajeros()."\n".
             "  Importe: ".$this->getImporte()."\n".
             "  Id Empresa: ".$this->getObjEmpresa()->getIdEmpresa()."\n".//ver si escribo la empresa o solo el id!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             "  Numero Responsable: ".$this->getObjResponsable()->getNumeroEmpleado()."\n";//ver si escribo el responsable o solo el id!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -83,7 +83,7 @@
             $base=new BaseDatos();
             $resp= false;
             $consultaInsertar="INSERT INTO viaje(idviaje, vdestino, vcantmaxViajes,idempresa,rnumeroempleado,vimporte) 
-                    VALUES (".$this->getIdViaje().",'".$this->getDestino()."','".$this->getCantMaxViajes()."','".
+                    VALUES (".$this->getIdViaje().",'".$this->getDestino()."','".$this->getCantMaxPasajeros()."','".
                     $this->getObjEmpresa()->getIdempresa()."','".$this->getObjResponsable()->getNumeroEmpleado()."','".$this->getImporte()."')";
             if($base->Iniciar()){
                 if($base->Ejecutar($consultaInsertar)){
@@ -117,7 +117,7 @@
             $resp =false; 
             $base=new BaseDatos();
             $consultaModifica="UPDATE viaje SET idviaje='".$this->getIdViaje()."',vdestino='".$this->getDestino().
-            "',vcantmaxViajes='".$this->getCantMaxViajes()."',idempresa='".$this->getObjEmpresa()->getIdEmpresa().
+            "',vcantmaxViajes='".$this->getCantMaxPasajeros()."',idempresa='".$this->getObjEmpresa()->getIdEmpresa().
             "',rnumeroempleado='".$this->getObjResponsable()->getNumeroEmpleado(). "',vimporte='".$this->getImporte().
             "' WHERE idviaje=". $this->getIdViaje();
             if($base->Iniciar()){

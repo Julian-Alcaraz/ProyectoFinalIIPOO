@@ -42,18 +42,7 @@
     echo"**************************************************************\n";
     return $opV;
   }
-  function existeEmpresa($idE){
-    $emp= new Empresa();
-    $emp->setIdEmpresa($idE);
-    $arregloEmp=$emp->listar();
-    $existencia=false;
-    foreach($arregloEmp as $e){
-      if($e->getIdEmpresa()==$idE){
-        $existencia=true;
-      }
-    }
-    return $existencia;
-  }
+  
   //FUNCIONES EMPRESA
   function ingresarEmpresa(){
     $empresa=new Empresa();
@@ -107,10 +96,93 @@
       $cantEmp++;
     }
   }
-  // FUNCIONES VIAJE
-  function ingresarViaje(){
-
+  function devolverEmpresa($idE){
+    $emp= new Empresa();
+    $emp->setIdEmpresa($idE);
+    $arregloEmp=$emp->listar();
+    foreach($arregloEmp as $e){
+      if($e->getIdEmpresa()==$idE){
+        $emp=$e;
+      }
+    }
+    return $emp;
   }
+  function existeEmpresa($idE){
+    $emp= new Empresa();
+    $emp->setIdEmpresa($idE);
+    $arregloEmp=$emp->listar();
+    $existencia=false;
+    foreach($arregloEmp as $e){
+      if($e->getIdEmpresa()==$idE){
+        $existencia=true;
+      }
+    }
+    return $existencia;
+  }
+  // FUNCIONES VIAJE
+  function ingresarViaje($idE){
+    echo "Ingrese el Id del responsable ";
+    $numeroRes=trim(FGETS(STDIN));
+    if(existeResponsable($numeroRes)){
+      $viaje=new Viaje();
+      echo "Ingrese el Destino del viaje ";
+      $destinoV=trim(fgets(STDIN));
+      echo "Ingrese la Cantidad Maxima de pasajeros del viaje ";
+      $cantMaxPasajerosV=trim(fgets(STDIN));
+      $empresaV=devolverEmpresa($idE);
+      echo "Ingrese el Importe del viaje ";
+      $importeV=trim(fgets(STDIN));
+      $responsableV=devolverResponsable($numeroRes);
+
+      $viaje->setDestino($destinoV);
+      $viaje->setCantMaxPasajeros($cantMaxPasajerosV);
+      $viaje->setObjResponsable($responsableV);
+      $viaje->setObjEmpresa($empresaV);
+      $viaje->setImporte($importeV);
+
+      $viaje->insertar();
+    }else{
+
+    }
+    $viaje=new Viaje();
+    echo "Ingrese el Destino del viaje ";
+    $destinoV=trim(fgets(STDIN));
+    echo "Ingrese la direccion del viaje ";
+    $direccionV=trim(fgets(STDIN));
+    echo "Ingrese la Cantidad Maxima de pasajeros del viaje ";
+    $cantMaxPasajerosV=trim(fgets(STDIN));
+    $empresaV=devolverEmpresa($idE);
+    echo "Ingrese el Importe del viaje ";
+    $direccionV=trim(fgets(STDIN));
+  }
+  //FUNCIONES RESPONSABLE
+  function existeResponsable($numR){
+    $res= new Responsable();
+    $res->setNumeroEmpleado($numR);
+    $arregloRes=$res->listar();
+    $existencia=false;
+    foreach($arregloRes as $r){
+      if($r->getNumEmpleado()==$numR){
+        $existencia=true;
+      }
+    }
+    return $existencia;
+  }
+  function devolverResponsable($numR){
+    $res= new Responsable();
+    $res->setNumeroEmpleado($numR);
+    $arregloRes=$res->listar();
+    foreach($arregloRes as $r){
+      if($r->getNumEmpleado()==$numR){
+        $res=$r;
+      }
+    }
+    return $res;
+  }
+
+
+
+  
   do{
     $opcion=opcionesEmpresa();
     switch($opcion){
@@ -136,7 +208,7 @@
             $opcionV=opcionesViaje();
             switch($opcionV){
               case 1:
-                // ingresarViaje();
+                ingresarViaje($numEmp);
                 break;
               case 2:
                 // modificarViaje();
