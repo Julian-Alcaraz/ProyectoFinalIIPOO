@@ -5,7 +5,12 @@
   include_once '../Clases/Empresa.php';
   include_once '../Clases/Responsable.php';
 
-
+  /*checklist 
+  (ingresar,modificar, eliminar, listar empresas) HECHO
+  ingresar HECHO , modificar, eliminar, listar viajes
+  ingresar HECHO , modificar ,elimar , listar Responsable
+  ingresar, modificar ,eliminar , listar pasajeros
+  */
 
   //primero voy a permitir que ingrese, modifique o elimine una empresa
   /*despues eligiendo una empresa previamente creada, si existe,
@@ -22,26 +27,51 @@
     echo "*Ingrese 2 si quiere MODIFICAR una empresa\n";
     echo "*Ingrese 3 si quiere ELIMINAR una empresa\n";
     echo "*Ingrese 4 si quiere LISTAR empresas\n";
-    echo "*Ingrese 5 si quiere TRABAJAR SOBRE LOS VIAJES de una empresa\n";
+    echo "*Ingrese 5 si quiere TRABAJAR SOBRE una empresa\n";
     echo "*Ingrese cualquier numero distinto para salir \n";
     $op = trim(fgets(STDIN));
     echo"**************************************************************\n";
     return $op;
   }
+  function opcionesGeneral(){
+    echo"**************************************************************\n";
+    echo "  **Ingrese 1 si quiere TRABAJAR SOBRE LOS VIAJES\n";
+    echo "  **Ingrese 2 si quiere TRABAJAR SOBRE LOS PASAJEROS\n";
+    echo "  **Ingrese 3 si quiere TRABAJAR SOBRE LOS RESPONSABLES\n";
+    echo "  **Ingrese 4 para volver al menu de empresas\n";
+    echo "  **Ingrese cualquier numero distinto para salir de la APP \n";
+    $opc = trim(fgets(STDIN));
+    echo"**************************************************************\n";
+    return $opc;
+  }
   function opcionesViaje(){
-    echo"**************************************************************\n";
-    echo "*Ingrese 1 si quiere INGRESAR un viaje\n";
-    echo "*Ingrese 2 si quiere MODIFICAR un viaje\n";
-    echo "*Ingrese 3 si quiere ELIMINAR un viaje\n";
-    echo "*Ingrese 4 si quiere LISTAR viajes\n";
-    echo "*Ingrese 5 si quiere TRABAJAR SOBRE LOS PASAJEROS\n";
-    echo "*Ingrese 6 si quiere TRABAJAR SOBRE LOS RESPONSABLES\n";
-    echo "*Ingrese 7 para volver al menu de empresas\n";
-    echo "*Ingrese cualquier numero distinto para salir de la APP \n";
+    echo "    ***Ingrese 1 si quiere INGRESAR un viaje\n";
+    echo "    ***Ingrese 2 si quiere MODIFICAR un viaje\n";
+    echo "    ***Ingrese 3 si quiere ELIMINAR un viaje\n";
+    echo "    ***Ingrese 4 si quiere LISTAR viajes\n";
+    echo "    ***Ingrese cualquier numero distinto para volver atras\n";
+
     $opV = trim(fgets(STDIN));
-    echo"**************************************************************\n";
     return $opV;
   }
+  function opcionesResponsable(){
+    echo "    ***Ingrese 1 si quiere INGRESAR un Responsable\n";
+    echo "    ***Ingrese 2 si quiere MODIFICAR un Responsable\n";
+    echo "    ***Ingrese 3 si quiere ELIMINAR un Responsable\n";
+    echo "    ***Ingrese 4 si quiere LISTAR Responsables\n";
+    echo "    ***Ingrese cualquier numero distinto para volver atras\n";
+    $opR = trim(fgets(STDIN));
+    return $opR;
+  }
+  function opcionesPasajeros(){
+    echo "    ***Ingrese 1 si quiere INGRESAR un Pasajeros\n";
+    echo "    ***Ingrese 2 si quiere MODIFICAR un Pasajeros\n";
+    echo "    ***Ingrese 3 si quiere ELIMINAR un Pasajeros\n";
+    echo "    ***Ingrese 4 si quiere LISTAR Pasajeros\n";
+    echo "    ***Ingrese cualquier numero distinto para volver atras\n";
+    $opP = trim(fgets(STDIN));
+    return $opP;
+  } 
   
   //FUNCIONES EMPRESA
   function ingresarEmpresa(){
@@ -123,6 +153,7 @@
   function ingresarViaje($idE){
     echo "Ingrese el Id del responsable ";
     $numeroRes=trim(FGETS(STDIN));
+
     if(existeResponsable($numeroRes)){
       $viaje=new Viaje();
       echo "Ingrese el Destino del viaje ";
@@ -142,19 +173,14 @@
 
       $viaje->insertar();
     }else{
-
+      echo "El Responsable ingresado no existe\n";
+      echo "Cargue un responsable o igrese el codigo correcto\n";
     }
-    $viaje=new Viaje();
-    echo "Ingrese el Destino del viaje ";
-    $destinoV=trim(fgets(STDIN));
-    echo "Ingrese la direccion del viaje ";
-    $direccionV=trim(fgets(STDIN));
-    echo "Ingrese la Cantidad Maxima de pasajeros del viaje ";
-    $cantMaxPasajerosV=trim(fgets(STDIN));
-    $empresaV=devolverEmpresa($idE);
-    echo "Ingrese el Importe del viaje ";
-    $direccionV=trim(fgets(STDIN));
   }
+  function modificarViaje(){}
+  function eliminarViaje(){}
+  function listarViajes(){}
+
   //FUNCIONES RESPONSABLE
   function existeResponsable($numR){
     $res= new Responsable();
@@ -162,7 +188,7 @@
     $arregloRes=$res->listar();
     $existencia=false;
     foreach($arregloRes as $r){
-      if($r->getNumEmpleado()==$numR){
+      if($r->getNumeroEmpleado()==$numR){
         $existencia=true;
       }
     }
@@ -173,16 +199,33 @@
     $res->setNumeroEmpleado($numR);
     $arregloRes=$res->listar();
     foreach($arregloRes as $r){
-      if($r->getNumEmpleado()==$numR){
+      if($r->getNumeroEmpleado()==$numR){
         $res=$r;
       }
     }
     return $res;
   }
-
-
-
-  
+  function ingresarResponsable(){
+    $respon= new Responsable;
+    echo "Ingresar numero Licencia ";
+    $numeroLic=trim(fgets(STDIN));
+    echo "Ingresar nombre ";
+    $nombreR=trim(fgets(STDIN));
+    echo "Ingresar apellido ";
+    $apellidoR=trim(fgets(STDIN));
+    $respon->setNumeroLicencia($numeroLic);
+    $respon->setNombre($nombreR);
+    $respon->setApellido($apellidoR);
+    $respon->insertar();
+  }
+  function modificarResponsable(){}
+  function eliminarResponsable(){}
+  function listarResponsables(){}
+  //FUNCIONES PASAJEROS
+  function ingresarPasajero(){}
+  function modificarPasajero(){}
+  function eliminarPasajero(){}
+  function listarPasajeros(){}
   do{
     $opcion=opcionesEmpresa();
     switch($opcion){
@@ -205,35 +248,83 @@
         $existeEmp=existeEmpresa($numEmp);
         if($existeEmp){
           do{
-            $opcionV=opcionesViaje();
-            switch($opcionV){
-              case 1:
-                ingresarViaje($numEmp);
+            $opcionG=opcionesGeneral();
+            switch($opcionG){
+              case 1://viajes
+                  do{
+                    $opcionV=opcionesViaje();
+                    switch($opcionV){
+                      case 1:
+                        ingresarViaje($numEmp);
+                        break;
+                      case 2: 
+                        modificarViaje();
+                        break;
+                      case 3:
+                        eliminarViaje();
+                        break;
+                      case 4:
+                        listarViajes();
+                        break;
+                      default:
+                        $opcionV=-3;
+                        break;
+                    }
+                  }while($opcionV!=-3);
                 break;
-              case 2:
-                // modificarViaje();
+              case 2://pasajeros
+                do{
+                  $opcionP=opcionesPasajeros();
+                  switch($opcionP){
+                    case 1:
+                      ingresarPasajero($numEmp);
+                      break;
+                    case 2: 
+                      modificarPasajero();
+                      break;
+                    case 3:
+                      eliminarPasajero();
+                      break;
+                    case 4:
+                      listarPasajeros();
+                      break;
+                    default:
+                      $opcionP=-3;
+                      break;
+                  }
+                }while($opcionP!=-3);
                 break;
-              case 3:
-                // eliminarViaje();
+              case 3://responsable
+                do{
+                  $opcionR=opcionesResponsable();
+                  switch($opcionR){
+                    case 1:
+                      ingresarResponsable($numEmp);
+                      break;
+                    case 2: 
+                      modificarResponsable();
+                      break;
+                    case 3:
+                      eliminarResponsable();
+                      break;
+                    case 4:
+                      listarResponsables();
+                      break;
+                    default:
+                      $opcionR=-3;
+                      break;
+                  }
+                }while($opcionR!=-3);
                 break;
               case 4:
-                // listarViaje();
-                break;
-              case 5:
-                //PASAJEROS
-                break;
-              case 6:
-                //REPRESENTANTE
-                break;
-              case 7:
-                $opcionV=-2;
+                $opcionG=-2;
                 break;
               default:
                 $opcion=-1;
-                $opcionV=-2;
+                $opcionG=-2;
                 break;
               }         
-            }while($opcionV!=-2);
+            }while($opcionG!=-2);
           }else{
             echo "ID ingresado no existente\n";
           }

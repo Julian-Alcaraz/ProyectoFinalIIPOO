@@ -82,8 +82,8 @@
         public function insertar(){
             $base=new BaseDatos();
             $resp= false;
-            $consultaInsertar="INSERT INTO viaje(idviaje, vdestino, vcantmaxViajes,idempresa,rnumeroempleado,vimporte) 
-                    VALUES (".$this->getIdViaje().",'".$this->getDestino()."','".$this->getCantMaxPasajeros()."','".
+            $consultaInsertar="INSERT INTO viaje( vdestino, vcantmaxpasajeros,idempresa,rnumeroempleado,vimporte) 
+                    VALUES ('".$this->getDestino()."','".$this->getCantMaxPasajeros()."','".
                     $this->getObjEmpresa()->getIdempresa()."','".$this->getObjResponsable()->getNumeroEmpleado()."','".$this->getImporte()."')";
             if($base->Iniciar()){
                 if($base->Ejecutar($consultaInsertar)){

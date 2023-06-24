@@ -62,8 +62,8 @@
         public function insertar(){
             $base=new BaseDatos();
             $resp= false;
-            $consultaInsertar="INSERT INTO responsable(numeroempleado,numerolicencia, rnombre,rapellido) 
-                    VALUES (".$this->getNumeroEmpleado().",'".$this->getNumeroLicencia()."','".$this->getNombre()."','".$this->getApellido()."')";
+            $consultaInsertar="INSERT INTO responsable (rnumerolicencia, rnombre,rapellido) 
+                    VALUES ('".$this->getNumeroLicencia()."','".$this->getNombre()."','".$this->getApellido()."')";
             if($base->Iniciar()){
                 if($base->Ejecutar($consultaInsertar)){
                     $resp=  true;
@@ -123,8 +123,8 @@
                 if($base->Ejecutar($consultaResponsable)){				
                     $arregloResponsable= array();
                     while($row2=$base->Registro()){
-                        $NumRes=$row2['numeroempleado'];
-                        $LicRes=$row2['numerolicencia'];
+                        $NumRes=$row2['rnumeroempleado'];
+                        $LicRes=$row2['rnumerolicencia'];
                         $NomRes=$row2['rnombre'];
                         $ApelRes=$row2['rapellido'];
                         $resp=new Responsable();
