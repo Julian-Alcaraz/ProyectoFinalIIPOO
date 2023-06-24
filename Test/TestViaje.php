@@ -6,12 +6,12 @@
   include_once '../Clases/Responsable.php';
 
   /*checklist 
-  (ingresar,modificar, eliminar, listar empresas) HECHO
-  ingresar HECHO , modificar, eliminar, listar viajes
-  ingresar HECHO , modificar ,elimar , listar Responsable
-  ingresar, modificar ,eliminar , listar pasajeros
+  Empresas ingresar HECHO,modificar HECHO,  eliminar (testear)  , listar HECHO  
+  Viajes ingresar HECHO , modificar(testear),   eliminar(testear)   , listar(testear)
+  Responsable ingresar HECHO , modificar(testear) ,eliminar (testear), listar(testear) 
+  Pasajeros ingresar(testear), modificar(testear) ,eliminar (testear), listar (testear)
   */
-
+  //
   //primero voy a permitir que ingrese, modifique o elimine una empresa
   /*despues eligiendo una empresa previamente creada, si existe,
    en caso contrario no va a poder, debera permitir crear un viaje,si y solo si 
@@ -91,6 +91,24 @@
     $emp->setIdEmpresa($idEli); 
     $existeEmp=existeEmpresa($idEli);
     if($existeEmp){
+      $viaje=new Viaje;
+      $condicion= "idempresa =".$idEli;
+      $arregloViajes= $viaje->listar($condicion);// raro lo de la condicon, tengo que testear
+      if($arregloViajes!=[]){
+        foreach($arregloViajes as $v){
+          $pas=new Pasajero();
+          $arregloPasajero=$pas->listar();
+          if($arregloPasajero!=[]){
+            foreach ($arregloPasajero as $p){//recorro todos los pasajeros
+              if($p->getIdViaje()==$v->getIdViaje()){
+                $p->eliminar();//borro los pasajeros que tiene el id de ese viaje
+              }
+            } 
+          }//una vez borrado todo
+          $v->eliminar();
+        }
+        echo "Elimino los Viajes de la empresa juntos a los pasajeros de cada viaje";
+      }
       $emp->eliminar();
       echo "Empresa eliminada correctamente\n";
     }else{
@@ -149,7 +167,31 @@
     }
     return $existencia;
   }
+
   // FUNCIONES VIAJE
+  function existeViaje($id){
+    $via= new Viaje();
+    $via->setIdViaje($id);
+    $arregloVia=$via->listar();
+    $existencia=false;
+    foreach($arregloVia as $v){
+      if($v->getIdEmpresa()==$id){
+        $existencia=true;
+      }
+    }
+    return $existencia;
+  }
+  function devolverViaje($id){
+    $via= new Viaje();
+    $via->setIdViaje($id);
+    $arregloVia=$via->listar();
+    foreach($arregloVia as $v){
+      if($v->getIdViaje()==$id){
+        $via=$v;
+      }
+    }
+    return $via;
+  }
   function ingresarViaje($idE){
     echo "Ingrese el Id del responsable ";
     $numeroRes=trim(FGETS(STDIN));
@@ -177,10 +219,76 @@
       echo "Cargue un responsable o igrese el codigo correcto\n";
     }
   }
-  function modificarViaje(){}
-  function eliminarViaje(){}
-  function listarViajes(){}
+  function modificarViaje($numEmpresa){
+    $via= new Viaje();
+    echo "Ingrese el ID del viaje que desea modificar\n";
+    $idMod = trim(fgets(STDIN));
+    $via->setIdViaje($idMod);
+    $existeEmp=existeViaje($idMod);
+    if($existeEmp){
+      echo "Ingrese el destino\n";
+      $destinoV=trim(fgets(STDIN));
+      echo "Ingrese la cantidad de pasajeros maxima\n";
+      $cantPasV=trim(fgets(STDIN));
+      echo "Ingrese el importe del viaje\n";
+      $importeV=trim(fgets(STDIN));
+      do{
+        echo "Ingrese el numero del representante";
+        $numeroRepreV=trim(fgets(STDIN));
+        $esta=true;
+        if(existeResponsable($numeroRepreV)){
+          $esta=false;
+          $responsableV=devolverResponsable($numeroRepreV);
+        }else{
+          echo "No existe el representante, ingrese un numero correcto";
+        }
+      }while($esta);
+      $empresaV=devolverEmpresa($numEmpresa);
+      $via->setDestino($destinoV);
+      $via->setCantMaxPasajeros($cantPasV);
+      $via->setObjEmpresa($empresaV);
+      $via->setObjResponsable($responsableV);
+      $via->setImporte($importeV);
+      $via->modificar();
+      echo "Viaje Modificado correctamente\n";
+    }else{
+      echo "ID ingresado no existente\n";
+    }
+  }
+  function listarViajes(){
+    $via=new Viaje();
+    $arregloVia=$via->listar();
+    $cantVia=1;
+    foreach ($arregloVia as $v){
+      echo "Viaje ".$cantVia."\n";
+      echo $v."\n";
+      $cantVia++;
+    }
+  }
+  function eliminarViaje(){
+    $via=new Viaje();
+    echo "Ingrese el numero de viaje que desea eliminar";
+    $idViaje=trim(fgets(STDIN));
+    if(existeViaje($idViaje)){
+      $viajeEliminar=devolverViaje($idViaje);
+      //tengo que eliminar todos los pasajeros de ese viaje
+      $pas=new Pasajero();
+      $arregloPasajero=$pas->listar();
+      if($arregloPasajero!=[]){
+        foreach ($arregloPasajero as $p){//recorro todos los pasajeros
+          if($p->getIdViaje()==$idViaje){
+            $p->eliminar();//borro los pasajeros que tiene el id de ese viaje
+          }
+        }
+      }
+      //una vez eliminado todos los pasajeros elimino el viaje tranquilamente
+      $viajeEliminar->eliminar();
+    }else{
+      echo "\nViaje no existente\n";
+    }
 
+  }
+ 
   //FUNCIONES RESPONSABLE
   function existeResponsable($numR){
     $res= new Responsable();
@@ -218,14 +326,166 @@
     $respon->setApellido($apellidoR);
     $respon->insertar();
   }
-  function modificarResponsable(){}
-  function eliminarResponsable(){}
-  function listarResponsables(){}
+  function modificarResponsable(){
+    $res= new Responsable();
+    echo "Ingrese el Numero del responsable que  desea modificar\n";
+    $idMod = trim(fgets(STDIN));
+    $res->setNumeroEmpleado($idMod);
+    $existeRes=existeResponsable($idMod);
+    if($existeRes){
+      echo "Ingrese el numero licencia\n";
+      $numeroLicR=trim(fgets(STDIN));
+      echo "Ingrese el nombre\n";
+      $nombreR=trim(fgets(STDIN));
+      echo "Ingrese el apellido\n";
+      $apellidoR=trim(fgets(STDIN));
+      $res->setNumeroLicencia($numeroLicR);
+      $res->setNombre($nombreR);
+      $res->setApellido($apellidoR);
+      $res->modificar();
+      echo "Empresa Modificada correctamente\n";
+    }else{
+      echo "ID ingresado no existente\n";
+    }
+  }
+  function eliminarResponsable(){
+    $res=new Responsable();
+    echo "Ingrese el NUMERO de responsable que desea eliminar\n";
+    $idEli = trim(fgets(STDIN));
+    $res->setNumeroEmpleado($idEli); 
+    $existeRes=existeResponsable($idEli);
+    if($existeRes){
+      $res->eliminar();
+      echo "Responsable eliminado correctamente\n";
+    }else{
+      echo "Numero ingresado no existente\n";
+    }
+  }
+  function listarResponsables(){
+    $res=new Responsable();
+    $arregloRes=$res->listar();
+    $cantRes=1;
+    foreach ($arregloRes as $r){
+      echo "Resposanble ".$cantRes."\n";
+      echo $r."\n";
+      $cantRes++;
+    }
+  }
+
   //FUNCIONES PASAJEROS
-  function ingresarPasajero(){}
-  function modificarPasajero(){}
-  function eliminarPasajero(){}
-  function listarPasajeros(){}
+  function ingresarPasajero(){
+    $pasa= new Pasajero;
+    echo "Ingresar numero documento ";
+    $documento=trim(fgets(STDIN));
+    echo "Ingresar nombre ";
+    $nombreP=trim(fgets(STDIN));
+    echo "Ingresar apellido ";
+    $apellidoP=trim(fgets(STDIN));
+    echo "Ingresar telefono ";
+    $telefonoP=trim(fgets(STDIN));
+    do{
+      echo "Ingresar ID Viaje ";
+      $idViaje=trim(fgets(STDIN));
+      $esta=true;
+      if(existeViaje($idViaje)){
+        $esta=false;
+        $viaje=devolverViaje($idViaje);
+      }else{
+        echo "No existe el viaje, ingrese un numero correcto";
+      }
+    }while($esta);
+    $pasa->setDni($documento);
+    $pasa->setNombre($nombreP);
+    $pasa->setApellido($apellidoP);
+    $pasa->setNumeroTel($apellidoP);
+    $pasa->setObjetoViaje($viaje);
+
+    $pasa->insertar();
+  }
+  function modificarPasajero(){
+    $pas= new Pasajero();
+    echo "Ingrese el Numero de documento que  desea modificar\n";
+    $doc = trim(fgets(STDIN));
+    $pas->setDni($doc);
+    $existePas=existePasajero($doc);
+    if($existePas){
+      echo "Ingresar numero documento ";
+      $documento=trim(fgets(STDIN));
+      echo "Ingresar nombre ";
+      $nombreP=trim(fgets(STDIN));
+      echo "Ingresar apellido ";
+      $apellidoP=trim(fgets(STDIN));
+      echo "Ingresar telefono ";
+      $telefonoP=trim(fgets(STDIN));
+      do{
+        echo "Ingresar ID Viaje ";
+        $idViaje=trim(fgets(STDIN));
+        $esta=true;
+        if(existeViaje($idViaje)){
+          $esta=false;
+          $viaje=devolverViaje($idViaje);
+        }else{
+          echo "No existe el viaje, ingrese un numero correcto";
+        }
+      }while($esta);
+      $pas->setDni($documento);
+      $pas->setNombre($nombreP);
+      $pas->setApellido($apellidoP);
+      $pas->setNumeroTel($apellidoP);
+      $pas->setObjetoViaje($viaje);
+      $pas->modificar();
+      echo "Empresa Modificada correctamente\n";
+    }else{
+      echo "ID ingresado no existente\n";
+    }
+  }
+  function eliminarPasajero(){
+    $pas=new Pasajero();
+    echo "Ingrese el NUMERO de DOCUMENTO que desea eliminar\n";
+    $doc = trim(fgets(STDIN));
+    $pas->setDni($doc); 
+    $existePas=existePasajero($doc);
+    if($existePas){
+      $pas->eliminar();
+      echo "Responsable eliminado correctamente\n";
+    }else{
+      echo "Numero ingresado no existente\n";
+    }
+  }
+  function listarPasajeros(){
+    $pas=new Pasajero();
+    $arregloPas=$pas->listar();
+    $cantPas=1;
+    foreach ($arregloPas as $p){
+      echo "Pasajero ".$cantPas."\n";
+      echo $p."\n";
+      $cantPas++;
+    }
+  }
+  function existePasajero($doc){
+    $pas= new Pasajero();
+    $pas->setDni($doc);
+    $arregloPas=$pas->listar();
+    $existencia=false;
+    foreach($arregloPas as $r){
+      if($r->getDni()==$doc){
+        $existencia=true;
+      }
+    }
+    return $existencia;
+  }
+  function devolverPasajero($doc){
+    $pas= new Pasajero();
+    $pas->setDni($doc);
+    $arregloPas=$pas->listar();
+    foreach($arregloPas as $p){
+      if($p->getDni()==$doc){
+        $pas=$p;
+      }
+    }
+    return $pas;
+  }
+
   do{
     $opcion=opcionesEmpresa();
     switch($opcion){
@@ -258,7 +518,7 @@
                         ingresarViaje($numEmp);
                         break;
                       case 2: 
-                        modificarViaje();
+                        modificarViaje($numEmp);
                         break;
                       case 3:
                         eliminarViaje();
