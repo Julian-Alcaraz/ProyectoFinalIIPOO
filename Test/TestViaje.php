@@ -6,9 +6,9 @@
   include_once '../Clases/Responsable.php';
 
   /*checklist 
-  Empresas ingresar HECHO,modificar HECHO,  eliminar (testear)  , listar HECHO  
-  Viajes ingresar HECHO , modificar(testear),   eliminar(testear)   , listar(testear)
-  Responsable ingresar HECHO , modificar(testear) ,eliminar (testear), listar(testear) 
+  FUNCIONA Responsable ingresar HECHO , modificar(HECHO) ,eliminar (HECHO), listar(HECHO) 
+  Empresas ingresar HECHO,modificar HECHO,  eliminar (testear/ a medias, probar con viajes ya pasajeros cargados)  , listar HECHO  
+  Viajes ingresar HECHO , modificar(HECHO),   eliminar(testeado sin pasajeros, falta testear cuanto tenga pasajeros)   , listar(HECHO)
   Pasajeros ingresar(testear), modificar(testear) ,eliminar (testear), listar (testear)
   */
   //
@@ -40,35 +40,41 @@
     echo "  **Ingrese 3 si quiere TRABAJAR SOBRE LOS RESPONSABLES\n";
     echo "  **Ingrese 4 para volver al menu de empresas\n";
     echo "  **Ingrese cualquier numero distinto para salir de la APP \n";
-    $opc = trim(fgets(STDIN));
     echo"**************************************************************\n";
+    $opc = trim(fgets(STDIN));
     return $opc;
   }
   function opcionesViaje(){
+    echo"**************************************************************\n";
     echo "    ***Ingrese 1 si quiere INGRESAR un viaje\n";
     echo "    ***Ingrese 2 si quiere MODIFICAR un viaje\n";
     echo "    ***Ingrese 3 si quiere ELIMINAR un viaje\n";
     echo "    ***Ingrese 4 si quiere LISTAR viajes\n";
     echo "    ***Ingrese cualquier numero distinto para volver atras\n";
-
+    echo"**************************************************************\n";
     $opV = trim(fgets(STDIN));
+    
     return $opV;
   }
   function opcionesResponsable(){
+    echo"**************************************************************\n";
     echo "    ***Ingrese 1 si quiere INGRESAR un Responsable\n";
     echo "    ***Ingrese 2 si quiere MODIFICAR un Responsable\n";
     echo "    ***Ingrese 3 si quiere ELIMINAR un Responsable\n";
     echo "    ***Ingrese 4 si quiere LISTAR Responsables\n";
     echo "    ***Ingrese cualquier numero distinto para volver atras\n";
+    echo"**************************************************************\n";
     $opR = trim(fgets(STDIN));
     return $opR;
   }
   function opcionesPasajeros(){
+    echo"**************************************************************\n";
     echo "    ***Ingrese 1 si quiere INGRESAR un Pasajeros\n";
     echo "    ***Ingrese 2 si quiere MODIFICAR un Pasajeros\n";
     echo "    ***Ingrese 3 si quiere ELIMINAR un Pasajeros\n";
     echo "    ***Ingrese 4 si quiere LISTAR Pasajeros\n";
     echo "    ***Ingrese cualquier numero distinto para volver atras\n";
+    echo"**************************************************************\n";
     $opP = trim(fgets(STDIN));
     return $opP;
   } 
@@ -169,13 +175,14 @@
   }
 
   // FUNCIONES VIAJE
-  function existeViaje($id){
+  function existeViaje($idV,$idEmp){
     $via= new Viaje();
-    $via->setIdViaje($id);
+    $via->setIdViaje($idV);
     $arregloVia=$via->listar();
     $existencia=false;
     foreach($arregloVia as $v){
-      if($v->getIdEmpresa()==$id){
+      $v->buscar($v->getIdViaje());
+      if($v->getObjEmpresa()->getIdEmpresa()==$idEmp && $v->getIdViaje()==$idV){
         $existencia=true;
       }
     }
@@ -193,7 +200,7 @@
     return $via;
   }
   function ingresarViaje($idE){
-    echo "Ingrese el Id del responsable ";
+    echo "Ingrese el Numero del responsable ";
     $numeroRes=trim(FGETS(STDIN));
 
     if(existeResponsable($numeroRes)){
@@ -224,8 +231,8 @@
     echo "Ingrese el ID del viaje que desea modificar\n";
     $idMod = trim(fgets(STDIN));
     $via->setIdViaje($idMod);
-    $existeEmp=existeViaje($idMod);
-    if($existeEmp){
+    $existeVia=existeViaje($idMod,$numEmpresa);
+    if($existeVia){
       echo "Ingrese el destino\n";
       $destinoV=trim(fgets(STDIN));
       echo "Ingrese la cantidad de pasajeros maxima\n";
@@ -265,11 +272,11 @@
       $cantVia++;
     }
   }
-  function eliminarViaje(){
+  function eliminarViaje($numEmp){
     $via=new Viaje();
     echo "Ingrese el numero de viaje que desea eliminar";
     $idViaje=trim(fgets(STDIN));
-    if(existeViaje($idViaje)){
+    if(existeViaje($idViaje,$numEmp)){
       $viajeEliminar=devolverViaje($idViaje);
       //tengo que eliminar todos los pasajeros de ese viaje
       $pas=new Pasajero();
@@ -283,6 +290,7 @@
       }
       //una vez eliminado todos los pasajeros elimino el viaje tranquilamente
       $viajeEliminar->eliminar();
+      echo "Viaje eliminado correctamente\n";
     }else{
       echo "\nViaje no existente\n";
     }
@@ -521,7 +529,7 @@
                         modificarViaje($numEmp);
                         break;
                       case 3:
-                        eliminarViaje();
+                        eliminarViaje($numEmp);
                         break;
                       case 4:
                         listarViajes();

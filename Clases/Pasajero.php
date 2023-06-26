@@ -127,7 +127,7 @@
             if ($condicion!=""){
                 $consultaPasajero=$consultaPasajero.' where '.$condicion;
             }
-            $consultaPasajero.=" order by enombre ";
+            $consultaPasajero.=" order by pdocumento ";
             //echo $consultaPersonas;
             if($base->Iniciar()){
                 if($base->Ejecutar($consultaPasajero)){				

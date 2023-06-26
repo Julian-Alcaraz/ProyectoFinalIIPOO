@@ -117,7 +117,7 @@
             $resp =false; 
             $base=new BaseDatos();
             $consultaModifica="UPDATE viaje SET idviaje='".$this->getIdViaje()."',vdestino='".$this->getDestino().
-            "',vcantmaxViajes='".$this->getCantMaxPasajeros()."',idempresa='".$this->getObjEmpresa()->getIdEmpresa().
+            "',vcantmaxpasajeros='".$this->getCantMaxPasajeros()."',idempresa='".$this->getObjEmpresa()->getIdEmpresa().
             "',rnumeroempleado='".$this->getObjResponsable()->getNumeroEmpleado(). "',vimporte='".$this->getImporte().
             "' WHERE idviaje=". $this->getIdViaje();
             if($base->Iniciar()){
@@ -139,7 +139,7 @@
             if ($condicion!=""){
                 $consultaViaje=$consultaViaje.' where '.$condicion;
             }
-            $consultaViaje.=" order by vdestino ";
+            $consultaViaje.=" order by idviaje";
             //echo $consultaPersonas;
             if($base->Iniciar()){
                 if($base->Ejecutar($consultaViaje)){				
@@ -148,12 +148,14 @@
                         $IdVi=$row2['idviaje'];
                         $DesVi=$row2['vdestino'];
                         $CantPasVi=$row2['vcantmaxpasajeros'];
-                        $IdEmp=$row2['idempresa'];
-                        $NumEmVi=$row2['rnumeroempleado'];
                         $ImpVi=$row2['vimporte'];
-                        
+                        $ObjResponsable=new Responsable();
+                        $ObjResponsable->buscar($row2['rnumeroempleado']);
+                        $ObjEmpresa=new Empresa();
+                        $ObjEmpresa->buscar($row2['idempresa']);
+
                         $via=new Viaje();
-                        $via->cargar($IdVi,$DesVi,$CantPasVi,$IdEmp,$NumEmVi,$ImpVi);
+                        $via->cargar($IdVi,$DesVi,$CantPasVi,$ObjResponsable,$ObjEmpresa,$ImpVi);
                         array_push($arregloViaje,$via);
                     }
                 }else{
@@ -164,6 +166,34 @@
             }	
             return $arregloViaje;
         }
+        public function buscar ($idViaje){
+            $base = new BaseDatos();
+            $consultaEmpresa = "Select * from viaje where idviaje=".$idViaje;
+            $resp = false;
+            if ($base -> Iniciar()){
+                if ($base -> Ejecutar ($consultaEmpresa)){
+                    if ($row2 = $base -> Registro()){					
+                        $this -> setIdViaje ($idViaje);
+                        $this -> setDestino ($row2['vdestino']);
+                        $this -> setCantMaxPasajeros ($row2['vcantmaxpasajeros']);
+                        $this-> setImporte($row2['vimporte']);
+                        $objetoEmpresa= new Empresa();
+                        $objetoEmpresa->buscar ($row2['idempresa']);
+                        $this -> setObjEmpresa ($objetoEmpresa);
+                        $objResponsable = new Responsable();
+					    $objResponsable -> buscar ($row2['rnumeroempleado']);
+					    $this -> setObjResponsable ($objResponsable);
+
+                        $resp = true;
+                    }				
+                }else{
+                    $this -> setMensajeOperacion ($base->getError());
+                }
+            }else{
+                $this -> setMensajeOperacion ($base->getError());	
+            }		
+            return $resp;
+            }
     }
 
 ?>

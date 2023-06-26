@@ -106,7 +106,7 @@
             if ($condicion!=""){
                 $consultaEmpresa=$consultaEmpresa.' where '.$condicion;
             }
-            $consultaEmpresa.=" order by enombre ";
+            $consultaEmpresa.=" order by idempresa ";
             //echo $consultaPersonas;
             if($base->Iniciar()){
                 if($base->Ejecutar($consultaEmpresa)){				
@@ -128,7 +128,27 @@
              }	
              return $arregloEmpresa;
         }
-    
-
+        public function buscar ($idEmpresa){
+		$base = new BaseDatos();
+		$consultaEmpresa = "Select * from empresa where idempresa=".$idEmpresa;
+		$resp = false;
+		if ($base -> Iniciar())
+            {
+		    	if ($base -> Ejecutar ($consultaEmpresa)){
+		    		if ($row2 = $base -> Registro())
+                    {					
+		    		    $this -> setIdEmpresa ($idEmpresa);
+		    			$this -> setNombre ($row2['enombre']);
+		    			$this -> setDireccion ($row2['edireccion']);
+		    			$resp = true;
+		    		}				
+		     	}else{
+		     		$this -> setMensajeOperacion ($base->getError());
+		    	}
+		    }else{
+		     	$this -> setMensajeOperacion ($base->getError());	
+		    }		
+		    return $resp;
+	    }
     }
 ?>

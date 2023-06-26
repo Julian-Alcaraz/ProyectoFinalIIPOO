@@ -80,7 +80,7 @@
             $base=new BaseDatos();
             $resp=false;
             if($base->Iniciar()){
-                $consultaBorra="DELETE FROM responsable WHERE numeroempleado=".$this->getNumeroEmpleado();
+                $consultaBorra="DELETE FROM responsable WHERE rnumeroempleado=".$this->getNumeroEmpleado();
                 if($base->Ejecutar($consultaBorra)){
                     $resp=  true;
                 }else{
@@ -95,9 +95,9 @@
          public function modificar(){
             $resp =false; 
             $base=new BaseDatos();
-            $consultaModifica="UPDATE responsable SET numeroempleado='".$this->getNumeroEmpleado()."',numerolicencia='".$this->getNumeroLicencia().
+            $consultaModifica="UPDATE responsable SET rnumeroempleado='".$this->getNumeroEmpleado()."',rnumerolicencia='".$this->getNumeroLicencia().
             "',rnombre='".$this->getNombre()."',rapellido='".$this->getApellido().
-            "' WHERE numeroempleado=". $this->getNumeroEmpleado();
+            "' WHERE rnumeroempleado=". $this->getNumeroEmpleado();
             if($base->Iniciar()){
                 if($base->Ejecutar($consultaModifica)){
                     $resp=  true;
@@ -138,6 +138,27 @@
                 $this->setmensajeoperacion($base->getError());
             }	
             return $arregloResponsable;
+        }
+        public function buscar($nroEmpleado){
+		    $base = new BaseDatos();
+		    $consultaResponsable = "Select * from responsable where rnumeroempleado=".$nroEmpleado;
+		    $resp = false;
+		    if ($base->Iniciar()){
+		    	if ($base->Ejecutar($consultaResponsable)){
+		    		if ($row2=$base->Registro()){					
+		    		    $this -> setNumeroEmpleado ($nroEmpleado);
+		    			$this -> setNumeroLicencia ($row2['rnumerolicencia']);
+		    			$this -> setNombre ($row2['rnombre']);
+                        $this -> setApellido ($row2['rapellido']);
+		    			$resp = true;
+		    		}				
+		     	}else{
+		     		$this->setMensajeOperacion($base->getError());
+		    	}
+		    }else {
+		     	$this->setMensajeOperacion($base->getError());
+		    }		
+		    return $resp;
         }
     }
     
