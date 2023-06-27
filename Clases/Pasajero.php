@@ -53,7 +53,7 @@
             $this->objetoViaje = new Viaje();
         }
         //funcion para guardar los valores de un objeto
-        public function Cargar($nom,$ape,$dni,$tel,$objV){
+        public function Cargar($dni,$nom,$ape,$tel,$objV){
             $this->setNombre($nom);
             $this->setApellido($ape);
             $this->setDni($dni);
@@ -71,8 +71,8 @@
         public function insertar(){
             $base=new BaseDatos();
             $resp= false;
-            $consultaInsertar="INSERT INTO pasajero(pdocumento, pnombre, papellido,idviaje) 
-                    VALUES (".$this->getDni().",'".$this->getNombre()."','".$this->getApellido()."','".$this->getObjetoViaje()->getIdViaje()."')";
+            $consultaInsertar="INSERT INTO pasajero(pdocumento, pnombre, papellido,ptelefono,idviaje) 
+                    VALUES (".$this->getDni().",'".$this->getNombre()."','".$this->getApellido()."','".$this->getNumeroTel()."','".$this->getObjetoViaje()->getIdViaje()."')";
             
             if($base->Iniciar()){
                 if($base->Ejecutar($consultaInsertar)){
@@ -137,10 +137,11 @@
                         $NomPa=$row2['pnombre'];
                         $ApePa=$row2['papellido'];
                         $TelPa=$row2['ptelefono'];
-                        $IdVia=$row2['idviaje'];
+                        $objViaje  = new Viaje();
+					    $objViaje -> buscar($row2['idviaje']);
                         
                         $pasa=new Pasajero();
-                        $pasa->cargar($DocPa,$NomPa,$ApePa,$TelPa,$IdVia);
+                        $pasa->cargar($DocPa,$NomPa,$ApePa,$TelPa,$objViaje);
                         array_push($arregloPasajero,$pasa);
                     }
                 }else{
@@ -151,6 +152,30 @@
             }	
             return $arregloPasajero;
         }
-    
+        public function buscar ($dni){
+            $base=new BaseDatos();
+            $consultaPasajero ="Select * from pasajero where pdocumento=".$dni;
+            $resp= false;
+            if($base->Iniciar()){
+                if($base->Ejecutar($consultaPasajero)){
+                    if($row2=$base->Registro()){					
+                        $this -> setDni ($dni);
+                        $this -> setNombre ($row2['pnombre']);
+                        $this -> setApellido ($row2['papellido']);
+                        $this -> setNumeroTel ($row2['ptelefono']);
+                        
+                        $objViaje = new Viaje();
+                        $objViaje -> buscar ($row2['idviaje']);
+                        $this -> setObjetoViaje($objViaje);
+                        $resp = true;
+                    }				
+                }else{
+                    $this->setMensajeOperacion($base->getError());
+                }
+            }else{
+                $this->setMensajeOperacion($base->getError());
+            }		
+            return $resp;
+        }
     }
 ?>

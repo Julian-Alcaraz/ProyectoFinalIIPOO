@@ -72,7 +72,7 @@
         public function __toString(){
             $mensaje="  Codigo Viaje: ".$this->getIdViaje()."\n".
             "  Destino Viaje: ".$this->getDestino()."\n".
-            "  Cantidad de Viajes: ".$this->getCantMaxPasajeros()."\n".
+            "  Cantidad de maxima de pasajeros: ".$this->getCantMaxPasajeros()."\n".
             "  Importe: ".$this->getImporte()."\n".
             "  Id Empresa: ".$this->getObjEmpresa()->getIdEmpresa()."\n".//ver si escribo la empresa o solo el id!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             "  Numero Responsable: ".$this->getObjResponsable()->getNumeroEmpleado()."\n";//ver si escribo el responsable o solo el id!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

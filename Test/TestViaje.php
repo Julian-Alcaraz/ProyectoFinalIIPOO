@@ -7,9 +7,9 @@
 
   /*checklist 
   FUNCIONA Responsable ingresar HECHO , modificar(HECHO) ,eliminar (HECHO), listar(HECHO) 
-  Empresas ingresar HECHO,modificar HECHO,  eliminar (testear/ a medias, probar con viajes ya pasajeros cargados)  , listar HECHO  
-  Viajes ingresar HECHO , modificar(HECHO),   eliminar(testeado sin pasajeros, falta testear cuanto tenga pasajeros)   , listar(HECHO)
-  Pasajeros ingresar(testear), modificar(testear) ,eliminar (testear), listar (testear)
+  Empresas ingresar HECHO,modificar HECHO,  eliminar (HECHO)  , listar HECHO  
+  Viajes ingresar HECHO , modificar(HECHO),   eliminar(HECHO)   , listar(HECHO)
+  Pasajeros ingresar(HECHO)), modificar(HECHO) ,eliminar (HECHO), listar (HECHO)
   */
   //
   //primero voy a permitir que ingrese, modifique o elimine una empresa
@@ -106,7 +106,8 @@
           $arregloPasajero=$pas->listar();
           if($arregloPasajero!=[]){
             foreach ($arregloPasajero as $p){//recorro todos los pasajeros
-              if($p->getIdViaje()==$v->getIdViaje()){
+              $p->buscar($p->getDni());
+              if($p->getObjetoViaje()->getIdViaje()==$v->getIdViaje()){
                 $p->eliminar();//borro los pasajeros que tiene el id de ese viaje
               }
             } 
@@ -262,14 +263,17 @@
       echo "ID ingresado no existente\n";
     }
   }
-  function listarViajes(){
+  function listarViajes($idE){
     $via=new Viaje();
     $arregloVia=$via->listar();
     $cantVia=1;
     foreach ($arregloVia as $v){
-      echo "Viaje ".$cantVia."\n";
-      echo $v."\n";
-      $cantVia++;
+      $v->buscar($v->getIdViaje());
+      if($v->getObjEmpresa()->getIdEmpresa()==$idE){
+        echo "Viaje ".$cantVia."\n";
+        echo $v."\n";
+        $cantVia++;
+      }
     }
   }
   function eliminarViaje($numEmp){
@@ -283,7 +287,8 @@
       $arregloPasajero=$pas->listar();
       if($arregloPasajero!=[]){
         foreach ($arregloPasajero as $p){//recorro todos los pasajeros
-          if($p->getIdViaje()==$idViaje){
+          $p->buscar($p->getDni());
+          if($p->getObjetoViaje()->getIdViaje()==$idViaje){
             $p->eliminar();//borro los pasajeros que tiene el id de ese viaje
           }
         }
@@ -381,8 +386,9 @@
   }
 
   //FUNCIONES PASAJEROS
-  function ingresarPasajero(){
+  function ingresarPasajero($numEmp){
     $pasa= new Pasajero;
+    //bverificar que el numero no este ingresado
     echo "Ingresar numero documento ";
     $documento=trim(fgets(STDIN));
     echo "Ingresar nombre ";
@@ -395,22 +401,23 @@
       echo "Ingresar ID Viaje ";
       $idViaje=trim(fgets(STDIN));
       $esta=true;
-      if(existeViaje($idViaje)){
+      if(existeViaje($idViaje,$numEmp)){
+        //en caso de existir verificar que no se exedan la cantidad de pasajeros
         $esta=false;
         $viaje=devolverViaje($idViaje);
       }else{
-        echo "No existe el viaje, ingrese un numero correcto";
+        echo "No existe el viaje, ingrese un numero correcto\n";
       }
     }while($esta);
     $pasa->setDni($documento);
     $pasa->setNombre($nombreP);
     $pasa->setApellido($apellidoP);
-    $pasa->setNumeroTel($apellidoP);
+    $pasa->setNumeroTel($telefonoP);
     $pasa->setObjetoViaje($viaje);
-
+    echo "Viaje pasajero correctamente\n";
     $pasa->insertar();
   }
-  function modificarPasajero(){
+  function modificarPasajero($numEmp){
     $pas= new Pasajero();
     echo "Ingrese el Numero de documento que  desea modificar\n";
     $doc = trim(fgets(STDIN));
@@ -429,7 +436,7 @@
         echo "Ingresar ID Viaje ";
         $idViaje=trim(fgets(STDIN));
         $esta=true;
-        if(existeViaje($idViaje)){
+        if(existeViaje($idViaje,$numEmp)){
           $esta=false;
           $viaje=devolverViaje($idViaje);
         }else{
@@ -439,7 +446,7 @@
       $pas->setDni($documento);
       $pas->setNombre($nombreP);
       $pas->setApellido($apellidoP);
-      $pas->setNumeroTel($apellidoP);
+      $pas->setNumeroTel($telefonoP);
       $pas->setObjetoViaje($viaje);
       $pas->modificar();
       echo "Empresa Modificada correctamente\n";
@@ -460,14 +467,19 @@
       echo "Numero ingresado no existente\n";
     }
   }
-  function listarPasajeros(){
+  function listarPasajeros($numEmp){
     $pas=new Pasajero();
     $arregloPas=$pas->listar();
     $cantPas=1;
     foreach ($arregloPas as $p){
+      $p->buscar($p->getDni());
+      $viaje=new Viaje();
+      $viaje->buscar($p->getObjetoViaje()->getIdViaje());
+      if($viaje->getObjEmpresa()->getIdEmpresa()==$numEmp){//solo lista los pasajeros de esa empresa
       echo "Pasajero ".$cantPas."\n";
       echo $p."\n";
       $cantPas++;
+      }
     }
   }
   function existePasajero($doc){
@@ -475,8 +487,8 @@
     $pas->setDni($doc);
     $arregloPas=$pas->listar();
     $existencia=false;
-    foreach($arregloPas as $r){
-      if($r->getDni()==$doc){
+    foreach($arregloPas as $p){
+      if($p->getDni()==$doc){
         $existencia=true;
       }
     }
@@ -532,7 +544,7 @@
                         eliminarViaje($numEmp);
                         break;
                       case 4:
-                        listarViajes();
+                        listarViajes($numEmp);
                         break;
                       default:
                         $opcionV=-3;
@@ -548,13 +560,13 @@
                       ingresarPasajero($numEmp);
                       break;
                     case 2: 
-                      modificarPasajero();
+                      modificarPasajero($numEmp);
                       break;
                     case 3:
                       eliminarPasajero();
                       break;
                     case 4:
-                      listarPasajeros();
+                      listarPasajeros($numEmp);
                       break;
                     default:
                       $opcionP=-3;
