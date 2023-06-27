@@ -388,9 +388,16 @@
   //FUNCIONES PASAJEROS
   function ingresarPasajero($numEmp){
     $pasa= new Pasajero;
-    //bverificar que el numero no este ingresado
-    echo "Ingresar numero documento ";
-    $documento=trim(fgets(STDIN));
+    //verificar que el numero no este ingresado
+    $maximaOcupacion=false;
+    do{
+      echo "Ingresar numero documento ";
+      $documento=trim(fgets(STDIN));
+      $Esta=existePasajero($documento);
+      if($Esta){
+        echo"Pasajero ya ingresado, Ingrese otra vez el documento\n";
+      }
+    }while($Esta);
     echo "Ingresar nombre ";
     $nombreP=trim(fgets(STDIN));
     echo "Ingresar apellido ";
@@ -403,19 +410,32 @@
       $esta=true;
       if(existeViaje($idViaje,$numEmp)){
         //en caso de existir verificar que no se exedan la cantidad de pasajeros
+
         $esta=false;
         $viaje=devolverViaje($idViaje);
+        $cantMaxPasajeros=$viaje->getCantMaxPasajeros();
+        $idV=$viaje->getIdViaje();
+        $condicion="idviaje=".$idV;
+        $coleccionPasajeros=$pasa->listar($condicion);
+        $pasajesOcupados=count($coleccionPasajeros);
+        if($pasajesOcupados>=$cantMaxPasajeros){
+          $maximaOcupacion=true;
+        }
       }else{
         echo "No existe el viaje, ingrese un numero correcto\n";
       }
     }while($esta);
-    $pasa->setDni($documento);
-    $pasa->setNombre($nombreP);
-    $pasa->setApellido($apellidoP);
-    $pasa->setNumeroTel($telefonoP);
-    $pasa->setObjetoViaje($viaje);
-    echo "Viaje pasajero correctamente\n";
-    $pasa->insertar();
+    if($maximaOcupacion){
+      echo "Lo sentimos el pasajero no puede ser ingresado,el viaje esta en su maxima ocupacion\n";
+    }else{
+      $pasa->setDni($documento);
+      $pasa->setNombre($nombreP);
+      $pasa->setApellido($apellidoP);
+      $pasa->setNumeroTel($telefonoP);
+      $pasa->setObjetoViaje($viaje);
+      echo "Viaje pasajero correctamente\n";
+      $pasa->insertar();
+    }
   }
   function modificarPasajero($numEmp){
     $pas= new Pasajero();
