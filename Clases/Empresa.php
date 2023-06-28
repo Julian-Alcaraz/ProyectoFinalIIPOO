@@ -1,10 +1,11 @@
 <?php 
     class Empresa{
+        //atributo de empresa
         private $idEmpresa;
         private $nombre;
         private $direccion;
         private $mensajeoperacion;
-
+        //metodos de acceso a los atribuos de empresa
         public function setIdEmpresa($valor){
             $this->idEmpresa=$valor;
         }
@@ -36,7 +37,7 @@
             $this->nombre= null;
             $this->direccion= null;
         }
-        //funcion para guardar los valores de un objeto
+        //funcion para guardar los valores de un objeto, setea todos los valores como si fuera construct
         public function cargar($id,$nom,$dir){		
             $this->setIdEmpresa($id);
             $this->setNombre($nom);
@@ -54,8 +55,8 @@
             $resp= false;
             $consultaInsertar="INSERT INTO empresa(enombre, edireccion) 
                     VALUES ('".$this->getNombre()."','".$this->getDireccion()."')";
-            if($base->Iniciar()){
-                if ($id = $base -> devuelveIDInsercion ($consultaInsertar)){
+            if($base->Iniciar()){//inicia la conexion con la bd
+                if ($id = $base -> devuelveIDInsercion ($consultaInsertar)){//no entiendo muy bien lo que hace
                 $this -> setIdEmpresa($id);
                 $resp = true;
                 }else{
@@ -70,9 +71,9 @@
         public function eliminar(){
             $base=new BaseDatos();
             $resp=false;
-            if($base->Iniciar()){
-                $consultaBorra="DELETE FROM empresa WHERE idempresa=".$this->getIdEmpresa();
-                if($base->Ejecutar($consultaBorra)){
+            if($base->Iniciar()){//inicia la conexion
+                $consultaBorra="DELETE FROM empresa WHERE idempresa=".$this->getIdEmpresa(); //creamos la consulta sql
+                if($base->Ejecutar($consultaBorra)){//ejecutamos la consulta, realiza accion dependiendo si se ejeucta o no
                     $resp=  true;
                 }else{
                     $this->setmensajeoperacion($base->getError());
@@ -86,9 +87,10 @@
         public function modificar(){
             $resp =false; 
             $base=new BaseDatos();
-            $consultaModifica="UPDATE empresa SET enombre='".$this->getNombre()."',edireccion='".$this->getDireccion()."' WHERE idempresa=". $this->getIdEmpresa();;
-            if($base->Iniciar()){
-                if($base->Ejecutar($consultaModifica)){
+            $consultaModifica="UPDATE empresa SET enombre='".$this->getNombre()."',edireccion='".$this->getDireccion().
+                    "' WHERE idempresa=". $this->getIdEmpresa();//creamos consulta de update
+            if($base->Iniciar()){//inicia la conexion con la bd
+                if($base->Ejecutar($consultaModifica)){//ejecuta la consulta
                     $resp=  true;
                 }else{
                     $this->setmensajeoperacion($base->getError());
@@ -106,18 +108,18 @@
             if ($condicion!=""){
                 $consultaEmpresa=$consultaEmpresa.' where '.$condicion;
             }
-            $consultaEmpresa.=" order by idempresa ";
+            $consultaEmpresa.=" order by idempresa ";//termina de crear la consulta
             //echo $consultaPersonas;
-            if($base->Iniciar()){
-                if($base->Ejecutar($consultaEmpresa)){				
-                    $arregloEmpresa= array();
-                    while($row2=$base->Registro()){
+            if($base->Iniciar()){//inicia la bd
+                if($base->Ejecutar($consultaEmpresa)){//ejecuta la consulta creada				
+                    $arregloEmpresa= array();//define el arreglo como array
+                    while($row2=$base->Registro()){//trae el registro de la base de dato en la fila , hasta que no hayan mas
                         $IdEmp=$row2['idempresa'];
                         $NomEmp=$row2['enombre'];
                         $DirEmp=$row2['edireccion'];
-                        $empre=new Empresa();
-                        $empre->cargar($IdEmp,$NomEmp,$DirEmp);
-                        array_push($arregloEmpresa,$empre);
+                        $empre=new Empresa();//crea un objeto empresa
+                        $empre->cargar($IdEmp,$NomEmp,$DirEmp);//setea los valores de la empresa
+                        array_push($arregloEmpresa,$empre);//carga la empresa en el arreglo
                     }
                 }else{
                     $this->setmensajeoperacion($base->getError());
@@ -128,26 +130,25 @@
              }	
              return $arregloEmpresa;
         }
+        //busca la empresa con ese id, y la setea en la empresa desde la que llaman el metodo
         public function buscar ($idEmpresa){
 		$base = new BaseDatos();
-		$consultaEmpresa = "Select * from empresa where idempresa=".$idEmpresa;
+		$consultaEmpresa = "Select * from empresa where idempresa=".$idEmpresa;//crea consulta
 		$resp = false;
-		if ($base -> Iniciar())
-            {
-		    	if ($base -> Ejecutar ($consultaEmpresa)){
-		    		if ($row2 = $base -> Registro())
-                    {					
-		    		    $this -> setIdEmpresa ($idEmpresa);
-		    			$this -> setNombre ($row2['enombre']);
-		    			$this -> setDireccion ($row2['edireccion']);
-		    			$resp = true;
-		    		}				
-		     	}else{
-		     		$this -> setMensajeOperacion ($base->getError());
-		    	}
+		if ($base -> Iniciar()){//inica la bd
+		    if ($base->Ejecutar($consultaEmpresa)){//ejecuta la consulta
+		    	if ($row2 = $base -> Registro()){	
+		    	    $this -> setIdEmpresa ($idEmpresa);//setea los valores en el objeto que llamo la funcion 
+		    		$this -> setNombre ($row2['enombre']);
+		    		$this -> setDireccion ($row2['edireccion']);
+		    		$resp = true;
+		    	}				
 		    }else{
-		     	$this -> setMensajeOperacion ($base->getError());	
-		    }		
+		    	$this -> setMensajeOperacion ($base->getError());
+		    }
+		}else{
+	     	$this -> setMensajeOperacion ($base->getError());	
+	    }		
 		    return $resp;
 	    }
     }

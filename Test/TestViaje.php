@@ -241,7 +241,7 @@
       echo "Ingrese el importe del viaje\n";
       $importeV=trim(fgets(STDIN));
       do{
-        echo "Ingrese el numero del representante";
+        echo "Ingrese el numero del representante ";
         $numeroRepreV=trim(fgets(STDIN));
         $esta=true;
         if(existeResponsable($numeroRepreV)){
@@ -278,7 +278,7 @@
   }
   function eliminarViaje($numEmp){
     $via=new Viaje();
-    echo "Ingrese el numero de viaje que desea eliminar";
+    echo "Ingrese el numero de viaje que desea eliminar ";
     $idViaje=trim(fgets(STDIN));
     if(existeViaje($idViaje,$numEmp)){
       $viajeEliminar=devolverViaje($idViaje);
@@ -385,8 +385,8 @@
     }
   }
 
-  //FUNCIONES PASAJEROS
-  function ingresarPasajero($numEmp){
+  //FUNCIONES PASAJEROS comentarios completos
+  function ingresarPasajero($numEmp){//ingresa el pasajero a la BD
     $pasa= new Pasajero;
     //verificar que el numero no este ingresado
     $maximaOcupacion=false;
@@ -410,7 +410,6 @@
       $esta=true;
       if(existeViaje($idViaje,$numEmp)){
         //en caso de existir verificar que no se exedan la cantidad de pasajeros
-
         $esta=false;
         $viaje=devolverViaje($idViaje);
         $cantMaxPasajeros=$viaje->getCantMaxPasajeros();
@@ -437,7 +436,7 @@
       $pasa->insertar();
     }
   }
-  function modificarPasajero($numEmp){
+  function modificarPasajero($numEmp){//modifica el pasajero 
     $pas= new Pasajero();
     echo "Ingrese el Numero de documento que  desea modificar\n";
     $doc = trim(fgets(STDIN));
@@ -452,6 +451,7 @@
       $apellidoP=trim(fgets(STDIN));
       echo "Ingresar telefono ";
       $telefonoP=trim(fgets(STDIN));
+      $maximaOcupacion=false;
       do{
         echo "Ingresar ID Viaje ";
         $idViaje=trim(fgets(STDIN));
@@ -459,22 +459,35 @@
         if(existeViaje($idViaje,$numEmp)){
           $esta=false;
           $viaje=devolverViaje($idViaje);
+          $cantMaxPasajeros=$viaje->getCantMaxPasajeros();
+          $idV=$viaje->getIdViaje();
+          $condicion="idviaje=".$idV;
+          $coleccionPasajeros=$pas->listar($condicion);
+          $pasajesOcupados=count($coleccionPasajeros);
+          if($pasajesOcupados>=$cantMaxPasajeros){
+            $maximaOcupacion=true;
+          }
         }else{
           echo "No existe el viaje, ingrese un numero correcto";
         }
       }while($esta);
-      $pas->setDni($documento);
-      $pas->setNombre($nombreP);
-      $pas->setApellido($apellidoP);
-      $pas->setNumeroTel($telefonoP);
-      $pas->setObjetoViaje($viaje);
-      $pas->modificar();
-      echo "Empresa Modificada correctamente\n";
+      if($maximaOcupacion){
+        echo "Lo sentimos el pasajero no puede ser ingresado,el viaje esta en su maxima ocupacion\n";
+      }else{
+        $pas->setDni($documento);
+        $pas->setNombre($nombreP);
+        $pas->setApellido($apellidoP);
+        $pas->setNumeroTel($telefonoP);
+        $pas->setObjetoViaje($viaje);
+        $pas->modificar();
+        echo "Pasajero Modificado correctamente\n";
+      }
+     
     }else{
-      echo "ID ingresado no existente\n";
+      echo "Documento ingresado no existente\n";
     }
   }
-  function eliminarPasajero(){
+  function eliminarPasajero(){//elimina pasajero
     $pas=new Pasajero();
     echo "Ingrese el NUMERO de DOCUMENTO que desea eliminar\n";
     $doc = trim(fgets(STDIN));
@@ -482,27 +495,27 @@
     $existePas=existePasajero($doc);
     if($existePas){
       $pas->eliminar();
-      echo "Responsable eliminado correctamente\n";
+      echo "Pasajero eliminado correctamente\n";
     }else{
       echo "Numero ingresado no existente\n";
     }
   }
-  function listarPasajeros($numEmp){
+  function listarPasajeros($numEmp){//lista todo los pasajeros de esa empresa
     $pas=new Pasajero();
     $arregloPas=$pas->listar();
     $cantPas=1;
     foreach ($arregloPas as $p){
       $p->buscar($p->getDni());
       $viaje=new Viaje();
-      $viaje->buscar($p->getObjetoViaje()->getIdViaje());
-      if($viaje->getObjEmpresa()->getIdEmpresa()==$numEmp){//solo lista los pasajeros de esa empresa
-      echo "Pasajero ".$cantPas."\n";
-      echo $p."\n";
-      $cantPas++;
+      $viaje->buscar($p->getObjetoViaje()->getIdViaje());//esto lo hago para que en el objeto viaje se setee la empresa como objeto y no como id
+      if($viaje->getObjEmpresa()->getIdEmpresa()==$numEmp){//solo lista los pasajeros de esa empresa ($numEmp=numero empresa)
+        echo "Pasajero ".$cantPas."\n";
+        echo $p."\n";
+        $cantPas++;
       }
     }
   }
-  function existePasajero($doc){
+  function existePasajero($doc){//verifica que el pasajero exista en la bd, y devuelve un boleano
     $pas= new Pasajero();
     $pas->setDni($doc);
     $arregloPas=$pas->listar();
@@ -514,13 +527,13 @@
     }
     return $existencia;
   }
-  function devolverPasajero($doc){
+  function devolverPasajero($doc){//devuelve el objeto pasajero
     $pas= new Pasajero();
     $pas->setDni($doc);
     $arregloPas=$pas->listar();
     foreach($arregloPas as $p){
       if($p->getDni()==$doc){
-        $pas=$p;
+        $pas=$p;//se podria mejorar utilizando la funcuion buscar asi me devuelve el objeto completo y no solo con los id de viaje
       }
     }
     return $pas;

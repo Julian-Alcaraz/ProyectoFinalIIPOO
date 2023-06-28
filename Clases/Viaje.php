@@ -32,7 +32,7 @@
         public function setmensajeoperacion($mensajeoperacion){
             $this->mensajeoperacion=$mensajeoperacion;
         }
-
+        //metodos de acceso a los atributos
         public function getImporte(){
             return $this->importe;    
         }
@@ -150,9 +150,9 @@
                         $CantPasVi=$row2['vcantmaxpasajeros'];
                         $ImpVi=$row2['vimporte'];
                         $ObjResponsable=new Responsable();
-                        $ObjResponsable->buscar($row2['rnumeroempleado']);
+                        $ObjResponsable->buscar($row2['rnumeroempleado']);//busca el responsable y lo guarda 
                         $ObjEmpresa=new Empresa();
-                        $ObjEmpresa->buscar($row2['idempresa']);
+                        $ObjEmpresa->buscar($row2['idempresa']);//busca la empresa y la guarda
 
                         $via=new Viaje();
                         $via->cargar($IdVi,$DesVi,$CantPasVi,$ObjResponsable,$ObjEmpresa,$ImpVi);
@@ -166,6 +166,7 @@
             }	
             return $arregloViaje;
         }
+        //devuelve el viaje, seteandolo en el objeto desde donde es llamado
         public function buscar ($idViaje){
             $base = new BaseDatos();
             $consultaEmpresa = "Select * from viaje where idviaje=".$idViaje;
