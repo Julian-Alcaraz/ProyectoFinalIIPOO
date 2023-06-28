@@ -3,7 +3,6 @@
         private $idViaje;
         private $destino;
         private $cantMaxViajes;
-        //private $Viajes=[];//nose si va segun enunciado si, segun bd no no lo uso por que no esta en la bd para mostrar los Viajes de un viaje voy a recorrer los Viajes con la funcion listar pero le agrego que sea de ese viaje, es decir $Viaje.id viaje= $viaje.id viaje
         private $objResponsable;//objeto
         private $importe;
         private $objEmpresa ;//objeto
@@ -86,8 +85,9 @@
                     VALUES ('".$this->getDestino()."','".$this->getCantMaxPasajeros()."','".
                     $this->getObjEmpresa()->getIdempresa()."','".$this->getObjResponsable()->getNumeroEmpleado()."','".$this->getImporte()."')";
             if($base->Iniciar()){
-                if($base->Ejecutar($consultaInsertar)){
-                    $resp=  true;
+                if($id = $base -> devuelveIDInsercion ($consultaInsertar)){
+                    $this->setIdViaje($id);
+                    $resp =  true;
                 }else{
                     $this->setmensajeoperacion($base->getError());
                 }
@@ -174,16 +174,14 @@
             if ($base -> Iniciar()){
                 if ($base -> Ejecutar ($consultaEmpresa)){
                     if ($row2 = $base -> Registro()){					
-                        $this -> setIdViaje ($idViaje);
-                        $this -> setDestino ($row2['vdestino']);
-                        $this -> setCantMaxPasajeros ($row2['vcantmaxpasajeros']);
-                        $this-> setImporte($row2['vimporte']);
-                        $objetoEmpresa= new Empresa();
-                        $objetoEmpresa->buscar ($row2['idempresa']);
-                        $this -> setObjEmpresa ($objetoEmpresa);
-                        $objResponsable = new Responsable();
-					    $objResponsable -> buscar ($row2['rnumeroempleado']);
-					    $this -> setObjResponsable ($objResponsable);
+                        $DesVi=$row2['vdestino'];
+                        $CantPasVi=$row2['vcantmaxpasajeros'];
+                        $ImpVi=$row2['vimporte'];
+                        $ObjetoEmpresa= new Empresa();
+                        $ObjetoEmpresa->buscar ($row2['idempresa']);
+                        $ObjResponsable = new Responsable();
+					    $ObjResponsable -> buscar ($row2['rnumeroempleado']);
+                        $this->cargar($idViaje,$DesVi,$CantPasVi,$ObjResponsable,$ObjetoEmpresa,$ImpVi);
 
                         $resp = true;
                     }				

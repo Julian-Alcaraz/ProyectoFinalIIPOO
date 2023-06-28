@@ -56,11 +56,11 @@
             $consultaInsertar="INSERT INTO empresa(enombre, edireccion) 
                     VALUES ('".$this->getNombre()."','".$this->getDireccion()."')";
             if($base->Iniciar()){//inicia la conexion con la bd
-                if ($id = $base -> devuelveIDInsercion ($consultaInsertar)){//no entiendo muy bien lo que hace
-                $this -> setIdEmpresa($id);
-                $resp = true;
+                if ($id = $base -> devuelveIDInsercion ($consultaInsertar)){
+                    $this -> setIdEmpresa($id);
+                    $resp = true;
                 }else{
-                $this -> setmensajeoperacion($base->getError());
+                    $this -> setmensajeoperacion($base->getError());
                 }
             }else{
                 $this->setmensajeoperacion($base->getError());  
@@ -132,23 +132,24 @@
         }
         //busca la empresa con ese id, y la setea en la empresa desde la que llaman el metodo
         public function buscar ($idEmpresa){
-		$base = new BaseDatos();
-		$consultaEmpresa = "Select * from empresa where idempresa=".$idEmpresa;//crea consulta
-		$resp = false;
-		if ($base -> Iniciar()){//inica la bd
-		    if ($base->Ejecutar($consultaEmpresa)){//ejecuta la consulta
-		    	if ($row2 = $base -> Registro()){	
-		    	    $this -> setIdEmpresa ($idEmpresa);//setea los valores en el objeto que llamo la funcion 
-		    		$this -> setNombre ($row2['enombre']);
-		    		$this -> setDireccion ($row2['edireccion']);
-		    		$resp = true;
-		    	}				
+		    $base = new BaseDatos();
+		    $consultaEmpresa = "Select * from empresa where idempresa=".$idEmpresa;//crea consulta
+		    $resp = false;
+		    if ($base -> Iniciar()){//inica la bd
+		        if ($base->Ejecutar($consultaEmpresa)){//ejecuta la consulta
+		        	if ($row2 = $base -> Registro()){	
+		        		$NomEmp=$row2['enombre'];
+		        		$DirEmp=$row2['edireccion'];
+                        $this->cargar($idEmpresa,$NomEmp,$DirEmp);//setea los valores de la empresa
+
+		        		$resp = true;
+		        	}				
+		        }else{
+		        	$this -> setMensajeOperacion ($base->getError());
+		        }
 		    }else{
-		    	$this -> setMensajeOperacion ($base->getError());
-		    }
-		}else{
-	     	$this -> setMensajeOperacion ($base->getError());	
-	    }		
+	         	$this -> setMensajeOperacion ($base->getError());	
+	        }		
 		    return $resp;
 	    }
     }

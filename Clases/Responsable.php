@@ -65,7 +65,8 @@
             $consultaInsertar="INSERT INTO responsable (rnumerolicencia, rnombre,rapellido) 
                     VALUES ('".$this->getNumeroLicencia()."','".$this->getNombre()."','".$this->getApellido()."')";
             if($base->Iniciar()){
-                if($base->Ejecutar($consultaInsertar)){
+                if($id = $base -> devuelveIDInsercion ($consultaInsertar)){
+                    $this->setNumeroEmpleado($id);
                     $resp=  true;
                 }else{
                     $this->setmensajeoperacion($base->getError());
@@ -146,10 +147,11 @@
 		    if ($base->Iniciar()){
 		    	if ($base->Ejecutar($consultaResponsable)){
 		    		if ($row2=$base->Registro()){					
-		    		    $this -> setNumeroEmpleado ($nroEmpleado);
-		    			$this -> setNumeroLicencia ($row2['rnumerolicencia']);
-		    			$this -> setNombre ($row2['rnombre']);
-                        $this -> setApellido ($row2['rapellido']);
+		    			$LicRes=$row2['rnumerolicencia'];
+		    			$NomRes=$row2['rnombre'];
+                        $ApelRes=$row2['rapellido'];
+                        $this->cargar($nroEmpleado,$LicRes,$NomRes,$ApelRes);
+
 		    			$resp = true;
 		    		}				
 		     	}else{

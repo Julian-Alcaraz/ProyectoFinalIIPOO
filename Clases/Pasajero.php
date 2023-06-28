@@ -159,14 +159,14 @@
             if($base->Iniciar()){
                 if($base->Ejecutar($consultaPasajero)){
                     if($row2=$base->Registro()){					
-                        $this -> setDni ($dni);
-                        $this -> setNombre ($row2['pnombre']);
-                        $this -> setApellido ($row2['papellido']);
-                        $this -> setNumeroTel ($row2['ptelefono']);
-                        
+                        $DocPa=$dni;
+                        $NomPa=$row2['pnombre'];
+                        $ApePa=$row2['papellido'];
+                        $TelPa=$row2['ptelefono'];
                         $objViaje = new Viaje();
                         $objViaje -> buscar ($row2['idviaje']);
-                        $this -> setObjetoViaje($objViaje);
+                        $this->cargar($DocPa,$NomPa,$ApePa,$TelPa,$objViaje);
+
                         $resp = true;
                     }				
                 }else{
